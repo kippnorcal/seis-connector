@@ -25,7 +25,7 @@ logging.basicConfig(
 
 
 LOCAL_DIR = "files"
-REMOTE_DIR = ""
+REMOTE_DIR = "/"
 
 notifications = create_notifications("SEIS Connector", "Mailgun", "app.log")
 
