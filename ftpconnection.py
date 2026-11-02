@@ -74,8 +74,12 @@ class FTPConnection:
         """
         for school in sub_dir_names:
             for file_name in file_names:
-                source = f"{remote_dir_path}/{school}/{file_name}"
-                destination = f"{local_dir_path}/{school}_{file_name}"
+                if local_dir_path == "/":
+                    source = f"/{school}/{file_name}"
+                    destination = f"/{school}_{file_name}"
+                else:
+                    source = f"{remote_dir_path}/{school}/{file_name}"
+                    destination = f"{local_dir_path}/{school}_{file_name}"
                 logging.info(f"Downloading {source} -> {destination}")
                 self.ftpsrv.get(
                     f"{remote_dir_path}/{school}/{file_name}",
