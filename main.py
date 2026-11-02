@@ -64,7 +64,7 @@ def get_file_paths_and_rename(schools: list, file_kind: str) -> Dict[str, str]:
             os.rename(source_path, dest_path)
             files[new_file_name] = dest_path
         except FileNotFoundError:
-            logging.info(f"File not found: {dest_path}")
+            logging.info(f"File not found: {source_path}")
     return files
 
 
