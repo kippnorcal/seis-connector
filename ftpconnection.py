@@ -28,8 +28,8 @@ class FTPConnection:
         self.client.load_host_keys(HOST_KEYS_PATH)
         self.client.set_missing_host_key_policy(paramiko.RejectPolicy())
         self.client.connect(
-            hostname="SEIS_SERVER_HOSTNAME",
-            username="YOUR_USERNAME",
+            hostname=FTP_HOST,
+            username=FTP_USER,
             pkey=key,
             look_for_keys=False,
             allow_agent=False,
