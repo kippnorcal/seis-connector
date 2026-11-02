@@ -81,7 +81,10 @@ class FTPConnection:
                     source = f"{remote_dir_path}/{school}/{file_name}"
                     destination = f"{local_dir_path}/{school}_{file_name}"
                 logging.info(f"Downloading {source} -> {destination}")
-                self.ftpsrv.get(
-                    f"{remote_dir_path}/{school}/{file_name}",
-                    f"{local_dir_path}/{school}_{file_name}",
-                )
+                try:
+                    self.ftpsrv.get(
+                        source,
+                        destination,
+                    )
+                except FileNotFoundError as e:
+                    logging.info(f"File not found: {e}")
