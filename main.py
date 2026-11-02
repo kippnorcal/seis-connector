@@ -58,7 +58,7 @@ def get_file_paths_and_rename(schools: list, file_kind: str) -> Dict[str, str]:
     for school in schools:
         source_path = os.path.join(LOCAL_DIR, f"{school}_{file_kind}.csv")
         new_file_name = f"{slugify(school, separator='_')}_{file_kind}.csv"
-        dest_path = os.path.join(LOCAL_DIR, f"{new_file_name}.csv")
+        dest_path = os.path.join(LOCAL_DIR, f"{new_file_name}")
         try:
             logging.info(f"Renaming {source_path} to {dest_path}")
             os.rename(source_path, dest_path)
