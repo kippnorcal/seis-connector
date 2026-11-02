@@ -60,10 +60,11 @@ def get_file_paths_and_rename(schools: list, file_kind: str) -> Dict[str, str]:
         new_file_name = f"{slugify(school, separator='_')}_{file_kind}.csv"
         dest_path = os.path.join(LOCAL_DIR, f"{new_file_name}.csv")
         try:
+            logging.info(f"Renaming {source_path} to {dest_path}")
             os.rename(source_path, dest_path)
             files[new_file_name] = dest_path
         except FileNotFoundError:
-            logging.info(f"File not found: {new_file_name}")
+            logging.info(f"File not found: {dest_path}")
     return files
 
 
@@ -101,8 +102,12 @@ def main():
     logging.info("Connecting to cloud storage")
     if len(student_files) > 0:
         insert_df_into_cloud(student_files, "students")
+    else:
+        logging.info("No student csv files found")
     if len(service_files) > 0:
         insert_df_into_cloud(service_files, "services")
+    else:
+        logging.info("No service csv files found")
 
 
 if __name__ == "__main__":
