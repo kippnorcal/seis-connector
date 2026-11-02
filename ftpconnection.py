@@ -8,7 +8,7 @@ FTP_HOST = os.getenv("FTP_HOST")
 FTP_PORT = int(os.getenv("FTP_PORT", 22))
 FTP_USER = os.getenv("FTP_USER")
 FTP_PWD = os.getenv("FTP_PWD")
-HOST_KEYS_PATH = ""
+HOST_KEYS_PATH = "/root/.ssh/known_hosts"
 CONNECTION_TIMEOUT = 30
 
 
@@ -22,16 +22,15 @@ class FTPConnection:
         Initialize SFTP connection using paramiko. The server's host key must be present in the
         known hosts file at HOST_KEYS_PATH, otherwise the connection is rejected.
         """
+        key = paramiko.RSAKey.from_private_key_file("/root/.ssh/seis_pipeline")
+
         self.client = paramiko.SSHClient()
         self.client.load_host_keys(HOST_KEYS_PATH)
         self.client.set_missing_host_key_policy(paramiko.RejectPolicy())
         self.client.connect(
-            hostname=FTP_HOST,
-            port=FTP_PORT,
-            username=FTP_USER,
-            password=FTP_PWD,
-            timeout=CONNECTION_TIMEOUT,
-            banner_timeout=CONNECTION_TIMEOUT,
+            hostname="SEIS_SERVER_HOSTNAME",
+            username="YOUR_USERNAME",
+            pkey=key,
             look_for_keys=False,
             allow_agent=False,
         )
