@@ -59,8 +59,11 @@ def get_file_paths_and_rename(schools: list, file_kind: str) -> Dict[str, str]:
         source_path = os.path.join(LOCAL_DIR, f"{school}_{file_kind}.csv")
         new_file_name = f"{slugify(school, separator='_')}_{file_kind}"
         dest_path = os.path.join(LOCAL_DIR, f"{new_file_name}.csv")
-        os.rename(source_path, dest_path)
-        files[new_file_name] = dest_path
+        try:
+            os.rename(source_path, dest_path)
+            files[new_file_name] = dest_path
+        except FileNotFoundError:
+            logging.info(f"File not found: {new_file_name}")
     return files
 
 
@@ -72,7 +75,6 @@ def insert_df_into_cloud(files: dict, sub_folder: str) -> None:
     cloud_conn = CloudStorageClient()
     f_count = 0
     f_amount = len(files)
-    print(type(files))
     for file, file_path in files.items():
         f_count += 1
         logging.info(f"Loading {f_count} of {f_amount}: {file}")
@@ -97,8 +99,10 @@ def main():
     logging.info(f"Found {len(service_files)} service csv files.")
 
     logging.info("Connecting to cloud storage")
-    insert_df_into_cloud(student_files, "students")
-    insert_df_into_cloud(service_files, "services")
+    if len(student_files) > 0:
+        insert_df_into_cloud(student_files, "students")
+    if len(service_files) > 0:
+        insert_df_into_cloud(service_files, "services")
 
 
 if __name__ == "__main__":
