@@ -74,7 +74,7 @@ class FTPConnection:
         """
         for school in sub_dir_names:
             for file_name in file_names:
-                if local_dir_path == "/":
+                if remote_dir_path == "/":
                     source = f"/{school}/{file_name}"
                     destination = f"/{school}_{file_name}"
                 else:
