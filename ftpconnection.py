@@ -87,4 +87,4 @@ class FTPConnection:
                         destination,
                     )
                 except FileNotFoundError as e:
-                    logging.info(f"File not found: {e}")
+                    logging.info(f"File not found: {source}")
