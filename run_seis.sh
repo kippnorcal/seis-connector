@@ -1,4 +1,3 @@
-s · SH
 #!/usr/bin/env bash
 #
 # Runs the SEIS pipeline container.
@@ -27,4 +26,3 @@ fi
     -v "$KEY_DIR/seis_pipeline:/root/.ssh/seis_pipeline:ro" \
     -v "$KEY_DIR/seis_known_hosts:/root/.ssh/known_hosts:ro" \
     "$IMAGE"
- 
