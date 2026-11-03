@@ -80,7 +80,7 @@ def insert_df_into_cloud(files: dict, sub_folder: str) -> None:
         f_count += 1
         logging.info(f"Loading {f_count} of {f_amount}: {file}")
         df = pd.read_csv(file_path, dtype=str)
-        blob = f"seis/{sub_folder}/{file}.csv"
+        blob = f"seis/{sub_folder}/{file}"
         cloud_conn.load_dataframe_to_cloud_as_csv(bucket, blob, df)
 
 
