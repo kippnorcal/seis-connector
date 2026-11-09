@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List
 
@@ -8,7 +9,7 @@ FTP_HOST = os.getenv("FTP_HOST")
 FTP_PORT = int(os.getenv("FTP_PORT", 22))
 FTP_USER = os.getenv("FTP_USER")
 FTP_PWD = os.getenv("FTP_PWD")
-HOST_KEYS_PATH = ""
+HOST_KEYS_PATH = "/root/.ssh/known_hosts"
 CONNECTION_TIMEOUT = 30
 
 
@@ -22,16 +23,15 @@ class FTPConnection:
         Initialize SFTP connection using paramiko. The server's host key must be present in the
         known hosts file at HOST_KEYS_PATH, otherwise the connection is rejected.
         """
+        key = paramiko.RSAKey.from_private_key_file("/root/.ssh/seis_pipeline")
+
         self.client = paramiko.SSHClient()
         self.client.load_host_keys(HOST_KEYS_PATH)
         self.client.set_missing_host_key_policy(paramiko.RejectPolicy())
         self.client.connect(
             hostname=FTP_HOST,
-            port=FTP_PORT,
             username=FTP_USER,
-            password=FTP_PWD,
-            timeout=CONNECTION_TIMEOUT,
-            banner_timeout=CONNECTION_TIMEOUT,
+            pkey=key,
             look_for_keys=False,
             allow_agent=False,
         )
@@ -74,7 +74,16 @@ class FTPConnection:
         """
         for school in sub_dir_names:
             for file_name in file_names:
-                self.ftpsrv.get(
-                    f"{remote_dir_path}/{school}/{file_name}",
-                    f"{local_dir_path}/{school}_{file_name}",
-                )
+                if remote_dir_path == "/":
+                    source = f"/{school}/{file_name}"
+                else:
+                    source = f"{remote_dir_path}/{school}/{file_name}"
+                destination = f"{local_dir_path}/{school}_{file_name}"
+                logging.info(f"Downloading {source} -> {destination}")
+                try:
+                    self.ftpsrv.get(
+                        source,
+                        destination,
+                    )
+                except FileNotFoundError as e:
+                    logging.info(f"File not found: {source}")

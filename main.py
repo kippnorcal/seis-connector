@@ -25,7 +25,7 @@ logging.basicConfig(
 
 
 LOCAL_DIR = "files"
-REMOTE_DIR = "seis"
+REMOTE_DIR = "/"
 
 notifications = create_notifications("SEIS Connector", "Mailgun", "app.log")
 
@@ -57,10 +57,14 @@ def get_file_paths_and_rename(schools: list, file_kind: str) -> Dict[str, str]:
     files = {}
     for school in schools:
         source_path = os.path.join(LOCAL_DIR, f"{school}_{file_kind}.csv")
-        new_file_name = f"{slugify(school, separator='_')}_{file_kind}"
-        dest_path = os.path.join(LOCAL_DIR, f"{new_file_name}.csv")
-        os.rename(source_path, dest_path)
-        files[new_file_name] = dest_path
+        new_file_name = f"{slugify(school, separator='_')}_{file_kind}.csv"
+        dest_path = os.path.join(LOCAL_DIR, f"{new_file_name}")
+        try:
+            logging.info(f"Renaming {source_path} to {dest_path}")
+            os.rename(source_path, dest_path)
+            files[new_file_name] = dest_path
+        except FileNotFoundError:
+            logging.info(f"File not found: {source_path}")
     return files
 
 
@@ -72,12 +76,11 @@ def insert_df_into_cloud(files: dict, sub_folder: str) -> None:
     cloud_conn = CloudStorageClient()
     f_count = 0
     f_amount = len(files)
-    print(type(files))
     for file, file_path in files.items():
         f_count += 1
         logging.info(f"Loading {f_count} of {f_amount}: {file}")
         df = pd.read_csv(file_path, dtype=str)
-        blob = f"seis/{sub_folder}/{file}.csv"
+        blob = f"seis/{sub_folder}/{file}"
         cloud_conn.load_dataframe_to_cloud_as_csv(bucket, blob, df)
 
 
@@ -97,8 +100,14 @@ def main():
     logging.info(f"Found {len(service_files)} service csv files.")
 
     logging.info("Connecting to cloud storage")
-    insert_df_into_cloud(student_files, "students")
-    insert_df_into_cloud(service_files, "services")
+    if len(student_files) > 0:
+        insert_df_into_cloud(student_files, "students")
+    else:
+        logging.info("No student csv files found")
+    if len(service_files) > 0:
+        insert_df_into_cloud(service_files, "services")
+    else:
+        logging.info("No service csv files found")
 
 
 if __name__ == "__main__":
