@@ -7,7 +7,7 @@ set -euo pipefail
 
 KEY_DIR="/home/data_admin/keys"
 LOCK_FILE="/tmp/run_seis.lock"
-IMAGE="seis"
+IMAGE="seis-connector"
 
 # --- This script takes no arguments ---
 if [[ $# -ne 0 ]]; then
